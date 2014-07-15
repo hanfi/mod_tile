@@ -274,10 +274,11 @@ struct storage_backend * init_storage_memcached(const char * connection_string) 
     store->tile_read = &memcached_tile_read;
     store->tile_stat = &memcached_tile_stat;
     store->metatile_write = &memcached_metatile_write;
-    store->metatile_delete connection_strcached_metatile_delete;
-    store->metatile_expiconnection_strmemcached_metatile_expire;
+    store->metatile_delete = &memcached_metatile_delete;
+    store->metatile_expire = &memcached_metatile_expire;
     store->tile_storage_id = &memcached_tile_storage_id;
     store->close_storage = &memcached_close_storage;
+
 
     free (connection_str);
     return store;
