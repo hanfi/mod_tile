@@ -231,7 +231,7 @@ int expand_meta(const char *name, struct storage_backend * store)
         if (force || (tile_stat.size < 0) || (tile_stat.expired)) {
             if (store->metatile_write(store, target, "options", x, y, z, buf, st.st_size) == -1) {
                 close(fd);
-                fprintf(stderr, "Failed to write data to couchbase %s/%d/%d/%d.png\n", target, x, y, z);
+                fprintf(stderr, "Failed to write data to Memcached %s/%d/%d/%d.png\n", target, x, y, z);
                 return -1;
             }
             if (verbose) printf("Produced metatile: %s/%d/%d/%d.meta\n", target, x, y, z);
@@ -315,7 +315,6 @@ static void *thread(void *pArg)
     pthread_mutex_lock(&threadInfo->mutex);
 
     threadInfo->status = THREAD_FREE;
-//    threadInfo->store = init_storage_couchbase(store_conf);
 
     pthread_mutex_unlock(&threadInfo->mutex);
 
@@ -432,7 +431,7 @@ static void descend(const char *search, int zoomdone, struct ThreadInfo *pThread
 
 void usage()
 {
-    fprintf(stderr, "Usage: m2t [-m mode] [-b bbox] [-z zoom] [-f force] [-t threads] [-c \"couchbase:{memcached://localhost:11211,memcached://localhost:11212}\"] sourcedir targetdir\n");
+    fprintf(stderr, "Usage: m2t [-m mode] [-b bbox] [-z zoom] [-f force] [-t threads] [-c \"memcached://localhost:11211,memcached://localhost:11212\"] sourcedir targetdir\n");
     fprintf(stderr, "Convert .meta files found in source dir to .png in target dir,\n");
     fprintf(stderr, "using the standard \"hash\" type directory (5-level) for meta\n");
     fprintf(stderr, "tiles and the z/x/y.png structure (3-level) for output.\n");
@@ -480,7 +479,7 @@ int main(int argc, char **argv)
         {
             {"verbose", 0, 0, 'v'},
             {"help", 0, 0, 'h'},
-            {"couchbase", 1, 0, 'c'},
+            {"memcached", 1, 0, 'c'},
             {"bbox", 1, 0, 'b'},
             {"mode", 1, 0, 'm'},
             {"zoom", 1, 0, 'z'},
