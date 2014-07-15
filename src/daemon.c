@@ -75,9 +75,9 @@ void send_response(struct item *item, enum protoCmd rsp, int render_time) {
         if ((item->fd != FD_INVALID) && ((req->cmd == cmdRender) || (req->cmd == cmdRenderPrio) || (req->cmd == cmdRenderBulk))) {
             req->cmd = rsp;
             //fprintf(stderr, "Sending message %s to %d\n", cmdStr(rsp), item->fd);
-            
+
             send_cmd(req, item->fd);
-            
+
         }
         prev = item;
         item = item->duplicates;
@@ -92,9 +92,9 @@ enum protoCmd rx_request(struct protocol *req, int fd)
     // Upgrade version 1 and 2 to  version 3
     if (req->ver == 1) {
         strcpy(req->xmlname, "default");
-    } 
+    }
     if (req->ver < 3) {
-        strcpy(req->mimetype,"image/png"); 
+        strcpy(req->mimetype,"image/png");
         strcpy(req->options,"");
     } else if (req->ver != 3) {
         syslog(LOG_ERR, "Bad protocol version %d", req->ver);
@@ -224,7 +224,7 @@ void process_loop(int listen_fd)
                         close(fd);
                     } else  {
                         enum protoCmd rsp = rx_request(&cmd, fd);
-                            
+
                         if (rsp == cmdNotDone) {
                             cmd.cmd = rsp;
                             syslog(LOG_DEBUG, "DEBUG: Sending NotDone response(%d)\n", rsp);
@@ -319,53 +319,53 @@ void *stats_writeout_thread(void * arg) {
 int client_socket_init(renderd_config * sConfig) {
     int fd, s;
     struct sockaddr_un * addrU;
-    struct addrinfo hints; 
+    struct addrinfo hints;
     struct addrinfo *result, *rp;
-    char portnum[16]; 
+    char portnum[16];
     char ipstring[INET6_ADDRSTRLEN];
 
     if (sConfig->ipport > 0) {
         syslog(LOG_INFO, "Initialising TCP/IP client socket to %s:%i", sConfig->iphostname, sConfig->ipport);
-        
-        memset(&hints, 0, sizeof(struct addrinfo)); 
-        hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */ 
-        hints.ai_socktype = SOCK_STREAM; /* TCP socket */ 
-        hints.ai_flags = 0; 
-        hints.ai_protocol = 0;          /* Any protocol */ 
-        hints.ai_canonname = NULL; 
-        hints.ai_addr = NULL; 
-        hints.ai_next = NULL; 
+
+        memset(&hints, 0, sizeof(struct addrinfo));
+        hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
+        hints.ai_socktype = SOCK_STREAM; /* TCP socket */
+        hints.ai_flags = 0;
+        hints.ai_protocol = 0;          /* Any protocol */
+        hints.ai_canonname = NULL;
+        hints.ai_addr = NULL;
+        hints.ai_next = NULL;
         sprintf(portnum,"%i", sConfig->ipport);
 
-        s = getaddrinfo(sConfig->iphostname, portnum, &hints, &result); 
-        if (s != 0) { 
-            syslog(LOG_INFO, "failed to resolve hostname of rendering slave"); 
-            return FD_INVALID; 
+        s = getaddrinfo(sConfig->iphostname, portnum, &hints, &result);
+        if (s != 0) {
+            syslog(LOG_INFO, "failed to resolve hostname of rendering slave");
+            return FD_INVALID;
         }
-        
-        /* getaddrinfo() returns a list of address structures. 
-           Try each address until we successfully connect. */ 
-        for (rp = result; rp != NULL; rp = rp->ai_next) { 
-            inet_ntop(rp->ai_family, rp->ai_family == AF_INET ? &(((struct sockaddr_in *)rp->ai_addr)->sin_addr) : 
-                      &(((struct sockaddr_in6 *)rp->ai_addr)->sin6_addr) , ipstring, rp->ai_addrlen); 
-            syslog(LOG_DEBUG, "Connecting TCP socket to rendering daemon at %s", ipstring); 
-            fd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol); 
-            if (fd < 0) 
-                continue; 
-            if (connect(fd, rp->ai_addr, rp->ai_addrlen) != 0) { 
-                syslog(LOG_INFO, "failed to connect to rendering daemon (%s), trying next ip", ipstring); 
+
+        /* getaddrinfo() returns a list of address structures.
+           Try each address until we successfully connect. */
+        for (rp = result; rp != NULL; rp = rp->ai_next) {
+            inet_ntop(rp->ai_family, rp->ai_family == AF_INET ? &(((struct sockaddr_in *)rp->ai_addr)->sin_addr) :
+                      &(((struct sockaddr_in6 *)rp->ai_addr)->sin6_addr) , ipstring, rp->ai_addrlen);
+            syslog(LOG_DEBUG, "Connecting TCP socket to rendering daemon at %s", ipstring);
+            fd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+            if (fd < 0)
+                continue;
+            if (connect(fd, rp->ai_addr, rp->ai_addrlen) != 0) {
+                syslog(LOG_INFO, "failed to connect to rendering daemon (%s), trying next ip", ipstring);
                 close(fd);
                 fd = -1;
                 continue;
-            } else { 
-                break; 
-            } 
+            } else {
+                break;
+            }
         }
         freeaddrinfo(result);
-        
-        if (fd < 0) { 
-            syslog(LOG_WARNING, "failed to connect to %s:%i", sConfig->iphostname, sConfig->ipport); 
-            return FD_INVALID; 
+
+        if (fd < 0) {
+            syslog(LOG_WARNING, "failed to connect to %s:%i", sConfig->iphostname, sConfig->ipport);
+            return FD_INVALID;
         }
 
         syslog(LOG_INFO, "socket %s:%i initialised to fd %i", sConfig->iphostname, sConfig->ipport, fd);
@@ -713,7 +713,7 @@ int main(int argc, char **argv)
             }
 
             strcpy(maps[iconf].xmlname, name);
-            
+
             sprintf(buffer, "%s:uri", name);
             char *ini_uri = iniparser_getstring(ini, buffer, (char *)"");
             if (strlen(ini_uri) >= (PATH_MAX - 1)) {
@@ -809,6 +809,9 @@ int main(int argc, char **argv)
             sprintf(buffer, "%s:socketname", name);
             config_slaves[render_sec].socketname = iniparser_getstring(ini,
                     buffer, (char *) RENDER_SOCKET);
+            sprintf(buffer, "%s:pidfile", name);
+            config_slaves[render_sec].pidfile = iniparser_getstring(ini,
+                    buffer, (char *) PIDFILE);
             sprintf(buffer, "%s:iphostname", name);
             config_slaves[render_sec].iphostname = iniparser_getstring(ini,
                     buffer, "");
@@ -826,6 +829,7 @@ int main(int argc, char **argv)
 
             if (render_sec == active_slave) {
                 config.socketname = config_slaves[render_sec].socketname;
+                config.pidfile = config_slaves[render_sec].pidfile;
                 config.iphostname = config_slaves[render_sec].iphostname;
                 config.ipport = config_slaves[render_sec].ipport;
                 config.num_threads = config_slaves[render_sec].num_threads;
@@ -849,6 +853,7 @@ int main(int argc, char **argv)
     } else {
         syslog(LOG_INFO, "config renderd: unix socketname=%s\n", config.socketname);
     }
+    syslog(LOG_INFO, "config renderd: pidfile=%s\n", config.pidfile);
     syslog(LOG_INFO, "config renderd: num_threads=%d\n", config.num_threads);
     if (active_slave == 0) {
         syslog(LOG_INFO, "config renderd: num_slaves=%d\n", noSlaveRenders);
@@ -915,10 +920,14 @@ int main(int argc, char **argv)
             fprintf(stderr, "can't daemonize: %s\n", strerror(errno));
         }
         /* write pid file */
-        FILE *pidfile = fopen(PIDFILE, "w");
+        FILE *pidfile = fopen(config.pidfile, "w");
         if (pidfile) {
             (void) fprintf(pidfile, "%d\n", getpid());
             (void) fclose(pidfile);
+          } else {
+           syslog(LOG_ERR, "Failed to open %s pidfile: %s", config.pidfile, strerror(errno));
+            close(fd);
+            exit(1);
         }
     }
 
