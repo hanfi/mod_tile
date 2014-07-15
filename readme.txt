@@ -83,7 +83,7 @@ if the respective libraries are installed. Once the dependencies are installed
 you can compile and install mod_tile / renderd the usual way:
 
 ./autogen.sh
-./configure
+./configure --prefix=/usr --sysconfdir=/etc
 make
 sudo make install
 sudo make install-mod_tile
@@ -104,7 +104,7 @@ it.  You may configure up to 10 (by default) mapnik
 style sheets - simply give each section a unique name and
 enter the uri and style sheet path.
 
-Make sure the /var/lib/mod_tile directory is writable by 
+Make sure the /var/lib/mod_tile directory is writable by
 the user running the renderd process and create a file an
 empty file planet-import-complete in this folder.
 
@@ -129,7 +129,7 @@ probably see a 404 error. Wait for the disk activity to
 cease and then reload the tile. With a bit of luck you
 should see a tile of the world in your browser window.
 
-If this fails to happen check the http error log.  You can 
+If this fails to happen check the http error log.  You can
 increase the level of debugging using the LogLevel apache
 directive.  If no log messages are shown check that you
 are accessing the correct virtual host - the new version
@@ -148,5 +148,3 @@ Rendering performance is mostly dependent on mapnik and postgis performance,
 however renderd tries to make sure it uses underlying hardware as efficiently
 as possible and scales well on multi core systems. Renderd also provides
 built-in features to scale to multi server rendering set-ups.
-
-
